@@ -33,11 +33,10 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
 
 
 ## Code Examples
-
-Variables used in these examples:
-	- **_hostname:port_** values are all site specific
-	- **_@path@_** is defined by the team that sets up the zUID service
-	- **_@key@_** is 1 to 255 character value that represents the key
+    Variables used in these examples:
+    - **_hostname:port_** values are all site specific
+    - **_@path@_** is defined by the team that sets up the zUID service
+    - **_@key@_** is 1 to 255 character value that represents the key
 
 ### Example URL calls:
 In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode.
@@ -367,7 +366,7 @@ Query mode parameters are limited to two values, one to turn on query mode and t
 ### HTTP Headers
 - Content-Type: {content-type}
 	This is a standard HTTP header but drives some functionality by the service.
-	When a record being stored or retrieved is not to be translated between EBCDIC and ASCII, set the content type to anything other than ‘text/*’. When a record being stored or retrieved is to be translated between EBCDIC and ASCII (text information accessible to all platforms), set the content type to ‘text/*’ (text/anything)’. All content type of ‘text/*’ will be translated between EBCDIC and ASCII on GET, POST, and PUT requests.
+	When a record being stored or retrieved is not to be translated between EBCDIC and ASCII, set the content type to anything other than Â‘text/*Â’. When a record being stored or retrieved is to be translated between EBCDIC and ASCII (text information accessible to all platforms), set the content type to Â‘text/*Â’ (text/anything)Â’. All content type of Â‘text/*Â’ will be translated between EBCDIC and ASCII on GET, POST, and PUT requests.
 	
 - Authorization: {Basic Auth Mode}
 	This is a standard HTTP header and used with the HTTPS requests. Standard basic mode authorization syntax where the RACF user and password are encoded base64 values.

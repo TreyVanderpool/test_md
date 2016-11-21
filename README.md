@@ -32,171 +32,6 @@ As part of the product there is a built-in expiration process that runs automati
 Note: The keys are actually stored in an indexed VSAM file so the keys are stored in sorted ascending order. This allows for the special features to query multiple keys and values in ascending or descending order.
 
 
-## Code Examples
-    Variables used in these examples:
-    - **_hostname:port_** values are all site specific
-    - **_@path@_** is defined by the team that sets up the zUID service
-    - **_@key@_** is 1 to 255 character value that represents the key
-
-### Example URL calls:
-In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode.
-
-| Key | Value |
-| --- | --- |
-| mlb_angels | { "name" : "Los Angeles Angles", "players" : 26 } |
-| mlb_astros | { "name" : "Houston Astros", "players" : 26 } |
-| mlb_athletics | { "name" : "Oakland Athletics", "players" : 26 } |
-| mlb_blue_jays | { "name" : "Toronto Blue Jays", "players" : 26 } |
-| mlb_braves | { "name" : "Atlanta Braves", "players" : 26 } |
-| mlb_brewers | { "name" : "Milwaukee Brewers", "players" : 26 } |
-| mlb_cardinals | { "name" : "St.Louis Cardinals", "players" : 26 } |
-| mlb_cubs | { "name" : "Chicago Cubs", "players" : 26 } |
-| mlb_diamondbacks | { "name" : "Arizona Diamondbacks", "players" : 26 } |
-| mlb_dodgers | { "name" : "Los Angeles Dodgers", "players" : 26 } |
-| mlb_giants | { "name" : "San Francisco Giants", "players" : 26 } |
-| mlb_indians | { "name" : "Cleveland Indians", "players" : 26 } |
-| mlb_mariners | { "name" : "Seattle Mariners", "players" : 26 } |
-| mlb_marlins | { "name" : "Florida Marlins", "players" : 26 } |
-| mlb_mets | { "name" : "New York Mets", "players" : 26 } |
-| mlb_nationals | { "name" : "Washington Nationals", "players" : 26 } |
-| mlb_orioles | { "name" : "Baltimore Orioles", "players" : 26 } |
-| mlb_padres | { "name" : "San Diego Padres", "players" : 26 } |
-| mlb_phillies | { "name" : "Philadelphia Phillies", "players" : 26 } |
-| mlb_pirates | { "name" : "Pittsburgh Pirates", "players" : 26 } |
-| mlb_rangers | { "name" : "Texas Rangers", "players" : 26 } |
-| mlb_rays | { "name" : "Tampa Bay Rays", "players" : 26 } |
-| mlb_red_sox | { "name" : "Boston Red Sox", "players" : 26 } |
-| mlb_reds | { "name" : "Cincinnati Reds", "players" : 26 } |
-| mlb_rockies | { "name" : "Colorado Rockies", "players" : 26 } |
-| mlb_royals | { "name" : "Kansas City Royals", "players" : 26 } |
-| mlb_tigers | { "name" : "Detroit Tigers", "players" : 26 } |
-| mlb_twins | { "name" : "Minnesota Twins", "players" : 26 } |
-| mlb_white_sox | { "name" : "Chicago White Sox", "players" : 26 } |
-| mlb_yankees | { "name" : "New York Yankees", "players" : 26 } |
-| nfl_bengals | { "name" : "Cincinnati Bengals", "players" : 53 } |
-| nfl_bills | { "name" : "Buffalo Bills", "players" : 53 } |
-
-
-- GET - http://hostname:port@path@@key@
-	No body.
-
-	1. Retrieve the value for a single key, "mlb_rangers".
-	http://hostname:port**_@path@mlb\_rangers_**
-	
-	HTTP Code: 200
-	HTTP Text: Ok
-	Body: { "name" : "Texas Rangers", "players" : 26 }
-	
-	2. Retrieve a list of the first 3 "mlb" teams. Use the **_ge_** and **_rows_** query parameters. The **ge** query parameter asks the service to return rows "greater than or equal to" the key value and **rows** indicates how many rows to return with this request.
-	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.
-	The body format changes to reflect all the keys and values returned by the request. Four values are repeated for each record. There are no quotes around the key or value strings. I prefer this method since it reports the true length of each key and value so it's easily parsed by lengths and don't have to worry about the data values conflicting with the delimiter character.
-	- 3 character numeric value representing length of the key.
-	- key, 1 to 255 byte value.
-	- 7 character numeric value representing length of the value.
-	- value, 1 to 3.2MB value.
-	http://hostname:port**_@path@mlb?ge,rows=3_**
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_dodgers
-	Body:	**010**mlb\_angels**0000049**{ "name" : "Los Angeles Angles", "players" : 26 }**010**mlb\_astros**0000045**{ "name" : "Houston Astros", "players" : 26 }**013**mlb\_athletics**0000048**{ "name" : "Oakland Athletics", "players" : 26 }
-	Response Headers:
-		zFAM-Rows: 3
-		zFAM-LastKey: mlb\_dodgers
-	
-	3. Issue the same request as item #2 except use the **delim** query parameter. This additional parameter will change the body format and use the single byte delimiter character to delimit the data.
-	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.
-	The body format changes to reflect all the keys and values delimited by the **delim** character. Again, there are no quotes around the key or value strings.
-	http://hostname:port**_@path@mlb?ge,rows=3,delim=|_**
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_dodgers
-	Body:	mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }
-	Returned Headers:
-		zFAM-Rows: 3
-		zFAM-LastKey: mlb\_dodgers
-		
-	4. Let's query all the **mlb** teams and use the **zFAM-RangeEnd** custom header to stop the query when the key changes from **mlb**. We will increase the **rows** value cause we're not sure how many are in the list and let the **zFAM-RangeEnd** header terminate the list. The **zFAM-Rows** response header will return the number of key/values returned in the body.
-	http://hostname:port**_@path@mlb?ge,rows=999,delim=|_**
-	Request Headers:
-		zFAM-RangeEnd: mlb
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_yankees
-	Body:	mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }|..._(continues for all 30 teams)_
-	Response Headers:
-		zFAM-Rows: 30
-		zFAM-LastKey: mlb\_yankees
-		
-	5. There will be times you just want to see the keys in your zFAM instance. We can do this with the **keysonly** query string parameter. This example will retrieve all the **mlb** keys only. Very similar to #4.
-	http://hostname:port**_@path@mlb?ge,rows=999,keysonly_**
-	Request Headers:
-		zFAM-RangeEnd: mlb
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_yankees
-	Body:	**010**mlb\_angels**010**mlb\_astros**013**mlb\_athletics..._(continues for all 30 teams)_
-	Response Headers:
-		zFAM-Rows: 30
-		zFAM-LastKey: mlb\_yankees
-
-- POST - http://hostname:port@path@@key@
-	Requires a body containing the data to save under specified key.
-	
-- PUT - http://hostname:port@path@@key@
-	Requires a body containing the data to save under specified key.
-
-- DELETE - http://hostname:port@path@@key@
-	No body. The key is removed from the instance.
-
-### curl:
-- Retrieve a value from the zECS instance.
-```curl -X GET "http://hostname:port@path@@key@"```
-	
-- Put a new key value onto the zECS instance.
-```curl -X POST "http://hostname:port@path@@key@" (value...)```
-	
-- Delete a key from the instance.
-```curl -X DELETE "http://hostname:port@path@@key@"```
-	
-### COBOL CICS:
-- Refer to [readme_COBOL_ex1](https://github.com/wamasoz/ECS/blob/master/readme_COBOL_ex1.md). Shows an insert, retrieve and delete for a key.
-	
-### standard browser (Chrome, IE, Safari):
-- Can only submit GET requests from the browser. Will need other tools like ARC (Advanced REST Client), DCH REST Client, SOAP-UI or Postman to execute additional requests with POST/PUT/DELETE.
-	
-	Retrieve the value for specified key:
-	http://hostname:port@path@/@key@
-	
-### Javascript:
-- This small snippet of code will show how to write, read and delete a key/value pair to the zECS instance.
-	
-    ```javascript
-	var svc = new XMLHttpRequest();
-	var url = "http://hostname:port@path@";
-	var key_name = "mlb_dodgers"
-	var ecs_value = "{ \"name\":\"Los Angeles Dodgers\", \"players\":26, \"salaries\":248606156, \"won_world_series\" : true }";
-	// Put a key value onto the zECS instance
-	svc.open( "POST", url + key_name, false );
-	svc.setRequestHeader("Content-type", "text/plain");
-	svc.send( ecs_value );
-	alert("POST Dodgers to zECS: " + "Status=" + svc.status + ":" + svc.statusText + "\nResponse=" + svc.responseText );
-	// On return we get HTTP status:200 with status text:Ok
-	
-	// Retrieve the mlb_dodgers key from the zECS instance
-	svc.open( "GET", url + key_name, false );
-	svc.send( null );
-	alert("GET Dodgers from zECS: " + "Status=" + svc.status + ":" + svc.statusText + "\nResponse=" + svc.responseText );
-	// On return we get HTTP status:200 with status text:Ok
-	// Return key value:{ "name":"Los Angeles Dodgers", "players":26, "salaries":248606156, "won_world_series" : true }
-	
-	// Delete the dodgers from the zECS instance.
-	svc.open( "DELETE", url + key_name, false );
-	svc.send( ecs_value );
-	alert("DELETE Dodgers from zECS: " + "Status=" + svc.status + ":" + svc.statusText + "\nResponse=" + svc.responseText );
-	// On return we get HTTP status:200 with status text:Ok
-```
-
-
 ## HTTP Status Codes
 - 204 01-002 xxxxxxxx GET Primary key record not found
 - 204 01-003 RangeBegin Key provided for DELETE not found.
@@ -465,6 +300,171 @@ Query mode parameters are limited to two values, one to turn on query mode and t
     (WHERE(**_col_name=value_**),(**_col_name=value_**),...)
     Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.
     Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
+
+
+## Code Examples
+Variables used in these examples:
+- **_hostname:port_** values are all site specific
+- **_@path@_** is defined by the team that sets up the zUID service
+- **_@key@_** is 1 to 255 character value that represents the key
+
+### Example URL calls:
+In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode.
+
+| Key | Value |
+| --- | --- |
+| mlb_angels | { "name" : "Los Angeles Angles", "players" : 26 } |
+| mlb_astros | { "name" : "Houston Astros", "players" : 26 } |
+| mlb_athletics | { "name" : "Oakland Athletics", "players" : 26 } |
+| mlb_blue_jays | { "name" : "Toronto Blue Jays", "players" : 26 } |
+| mlb_braves | { "name" : "Atlanta Braves", "players" : 26 } |
+| mlb_brewers | { "name" : "Milwaukee Brewers", "players" : 26 } |
+| mlb_cardinals | { "name" : "St.Louis Cardinals", "players" : 26 } |
+| mlb_cubs | { "name" : "Chicago Cubs", "players" : 26 } |
+| mlb_diamondbacks | { "name" : "Arizona Diamondbacks", "players" : 26 } |
+| mlb_dodgers | { "name" : "Los Angeles Dodgers", "players" : 26 } |
+| mlb_giants | { "name" : "San Francisco Giants", "players" : 26 } |
+| mlb_indians | { "name" : "Cleveland Indians", "players" : 26 } |
+| mlb_mariners | { "name" : "Seattle Mariners", "players" : 26 } |
+| mlb_marlins | { "name" : "Florida Marlins", "players" : 26 } |
+| mlb_mets | { "name" : "New York Mets", "players" : 26 } |
+| mlb_nationals | { "name" : "Washington Nationals", "players" : 26 } |
+| mlb_orioles | { "name" : "Baltimore Orioles", "players" : 26 } |
+| mlb_padres | { "name" : "San Diego Padres", "players" : 26 } |
+| mlb_phillies | { "name" : "Philadelphia Phillies", "players" : 26 } |
+| mlb_pirates | { "name" : "Pittsburgh Pirates", "players" : 26 } |
+| mlb_rangers | { "name" : "Texas Rangers", "players" : 26 } |
+| mlb_rays | { "name" : "Tampa Bay Rays", "players" : 26 } |
+| mlb_red_sox | { "name" : "Boston Red Sox", "players" : 26 } |
+| mlb_reds | { "name" : "Cincinnati Reds", "players" : 26 } |
+| mlb_rockies | { "name" : "Colorado Rockies", "players" : 26 } |
+| mlb_royals | { "name" : "Kansas City Royals", "players" : 26 } |
+| mlb_tigers | { "name" : "Detroit Tigers", "players" : 26 } |
+| mlb_twins | { "name" : "Minnesota Twins", "players" : 26 } |
+| mlb_white_sox | { "name" : "Chicago White Sox", "players" : 26 } |
+| mlb_yankees | { "name" : "New York Yankees", "players" : 26 } |
+| nfl_bengals | { "name" : "Cincinnati Bengals", "players" : 53 } |
+| nfl_bills | { "name" : "Buffalo Bills", "players" : 53 } |
+
+
+- GET - http://hostname:port@path@@key@
+	No body.
+
+	1. Retrieve the value for a single key, "mlb_rangers".
+	http://hostname:port**_@path@mlb\_rangers_**
+	
+	HTTP Code: 200
+	HTTP Text: Ok
+	Body: { "name" : "Texas Rangers", "players" : 26 }
+	
+	2. Retrieve a list of the first 3 "mlb" teams. Use the **_ge_** and **_rows_** query parameters. The **ge** query parameter asks the service to return rows "greater than or equal to" the key value and **rows** indicates how many rows to return with this request.
+	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.
+	The body format changes to reflect all the keys and values returned by the request. Four values are repeated for each record. There are no quotes around the key or value strings. I prefer this method since it reports the true length of each key and value so it's easily parsed by lengths and don't have to worry about the data values conflicting with the delimiter character.
+	- 3 character numeric value representing length of the key.
+	- key, 1 to 255 byte value.
+	- 7 character numeric value representing length of the value.
+	- value, 1 to 3.2MB value.
+	http://hostname:port**_@path@mlb?ge,rows=3_**
+	
+	HTTP Code: 200
+	HTTP Text: mlb\_dodgers
+	Body:	**010**mlb\_angels**0000049**{ "name" : "Los Angeles Angles", "players" : 26 }**010**mlb\_astros**0000045**{ "name" : "Houston Astros", "players" : 26 }**013**mlb\_athletics**0000048**{ "name" : "Oakland Athletics", "players" : 26 }
+	Response Headers:
+		zFAM-Rows: 3
+		zFAM-LastKey: mlb\_dodgers
+	
+	3. Issue the same request as item #2 except use the **delim** query parameter. This additional parameter will change the body format and use the single byte delimiter character to delimit the data.
+	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.
+	The body format changes to reflect all the keys and values delimited by the **delim** character. Again, there are no quotes around the key or value strings.
+	http://hostname:port**_@path@mlb?ge,rows=3,delim=|_**
+	
+	HTTP Code: 200
+	HTTP Text: mlb\_dodgers
+	Body:	mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }
+	Returned Headers:
+		zFAM-Rows: 3
+		zFAM-LastKey: mlb\_dodgers
+		
+	4. Let's query all the **mlb** teams and use the **zFAM-RangeEnd** custom header to stop the query when the key changes from **mlb**. We will increase the **rows** value cause we're not sure how many are in the list and let the **zFAM-RangeEnd** header terminate the list. The **zFAM-Rows** response header will return the number of key/values returned in the body.
+	http://hostname:port**_@path@mlb?ge,rows=999,delim=|_**
+	Request Headers:
+		zFAM-RangeEnd: mlb
+	
+	HTTP Code: 200
+	HTTP Text: mlb\_yankees
+	Body:	mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }|..._(continues for all 30 teams)_
+	Response Headers:
+		zFAM-Rows: 30
+		zFAM-LastKey: mlb\_yankees
+		
+	5. There will be times you just want to see the keys in your zFAM instance. We can do this with the **keysonly** query string parameter. This example will retrieve all the **mlb** keys only. Very similar to #4.
+	http://hostname:port**_@path@mlb?ge,rows=999,keysonly_**
+	Request Headers:
+		zFAM-RangeEnd: mlb
+	
+	HTTP Code: 200
+	HTTP Text: mlb\_yankees
+	Body:	**010**mlb\_angels**010**mlb\_astros**013**mlb\_athletics..._(continues for all 30 teams)_
+	Response Headers:
+		zFAM-Rows: 30
+		zFAM-LastKey: mlb\_yankees
+
+- POST - http://hostname:port@path@@key@
+	Requires a body containing the data to save under specified key.
+	
+- PUT - http://hostname:port@path@@key@
+	Requires a body containing the data to save under specified key.
+
+- DELETE - http://hostname:port@path@@key@
+	No body. The key is removed from the instance.
+
+### curl:
+- Retrieve a value from the zECS instance.
+```curl -X GET "http://hostname:port@path@@key@"```
+	
+- Put a new key value onto the zECS instance.
+```curl -X POST "http://hostname:port@path@@key@" (value...)```
+	
+- Delete a key from the instance.
+```curl -X DELETE "http://hostname:port@path@@key@"```
+	
+### COBOL CICS:
+- Refer to [readme_COBOL_ex1](https://github.com/wamasoz/ECS/blob/master/readme_COBOL_ex1.md). Shows an insert, retrieve and delete for a key.
+	
+### standard browser (Chrome, IE, Safari):
+- Can only submit GET requests from the browser. Will need other tools like ARC (Advanced REST Client), DCH REST Client, SOAP-UI or Postman to execute additional requests with POST/PUT/DELETE.
+	
+	Retrieve the value for specified key:
+	http://hostname:port@path@/@key@
+	
+### Javascript:
+- This small snippet of code will show how to write, read and delete a key/value pair to the zECS instance.
+	
+    ```javascript
+	var svc = new XMLHttpRequest();
+	var url = "http://hostname:port@path@";
+	var key_name = "mlb_dodgers"
+	var ecs_value = "{ \"name\":\"Los Angeles Dodgers\", \"players\":26, \"salaries\":248606156, \"won_world_series\" : true }";
+	// Put a key value onto the zECS instance
+	svc.open( "POST", url + key_name, false );
+	svc.setRequestHeader("Content-type", "text/plain");
+	svc.send( ecs_value );
+	alert("POST Dodgers to zECS: " + "Status=" + svc.status + ":" + svc.statusText + "\nResponse=" + svc.responseText );
+	// On return we get HTTP status:200 with status text:Ok
+	
+	// Retrieve the mlb_dodgers key from the zECS instance
+	svc.open( "GET", url + key_name, false );
+	svc.send( null );
+	alert("GET Dodgers from zECS: " + "Status=" + svc.status + ":" + svc.statusText + "\nResponse=" + svc.responseText );
+	// On return we get HTTP status:200 with status text:Ok
+	// Return key value:{ "name":"Los Angeles Dodgers", "players":26, "salaries":248606156, "won_world_series" : true }
+	
+	// Delete the dodgers from the zECS instance.
+	svc.open( "DELETE", url + key_name, false );
+	svc.send( ecs_value );
+	alert("DELETE Dodgers from zECS: " + "Status=" + svc.status + ":" + svc.statusText + "\nResponse=" + svc.responseText );
+	// On return we get HTTP status:200 with status text:Ok
+```
 
 
 ## Contributors

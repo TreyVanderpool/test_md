@@ -1,6 +1,6 @@
 ## Synopsis
 
-zECS is a cloud enabled distributed NoSQL key/value store (KVS) file systemin the z/OS environment. Very high performing and high available system used to store text or binary content. Single instances can be shared by multiple clients or unique instances can be defined for each individual client. 
+zFAM is a cloud enabled distributed NoSQL key/value store (KVS) file systemin the z/OS environment. Very high performing and high available system used to store text or binary content. Single instances can be shared by multiple clients or unique instances can be defined for each individual client. 
 
 - L2 Distributed write thru cache to persistent disk
 - Key/Value structure
@@ -52,27 +52,55 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
     No body
 
 ###Basic Mode
+- **Query string parameters:**
+    - GET
+        - rows=9999
+        - keysonly
+        - delim={char}
 
-###Query string parameters
-    The query parameters are part of the URI and used to request additional features of the zFAM product. They are defined as name=value pairs separated by comma's.
-    
-    - GET - Read values from zFAM
-        - rows=9999  
-            Optional  
-            Method: GET  
-            Requests from 1 to 9999 key/values be returned in a single request. This return body is heavily impacted by the **_keysonly_** and **_delim_** query parameters. See examples below how the body changes using the different parameters.  
-            Its possible not to receive the full number of rows as requested. This parameter can be stopped early with the custom **zFAM-RangeEnd** header which sets the end terminating string value for the key to stop at. Or if the zFAM instance reached the end of the key list.
-	
+    - POST/PUT
+        - ttl=99999
+
+- **HTTP Headers:**
+    - GET
+        - Content-Type: @content-type@
+        - Authorization: @Basic Auth Mode@
+        - zFAM-RangeEnd: @string_value@
+        - zFAM-LastKey: @string_value@
+
+    - POST
+        - Content-Type: @content-type@
+        - Authorization: @Basic Auth Mode@
+        - zFAM-UID: yes
+        - zFAM-Modulo: 99
+
+    - PUT
+        - Content-Type: @content-type@
+        - Authorization: @Basic Auth Mode@
+        - zFAM-LOB: yes
+        - zFAM-Append: yes
+
+    - DELETE
+        - zFAM-RangeBegin: @string_value@
+        - zFAM-RangeEnd: @string_value@
+
+- **Definitions for each of the query strings and headers:**
+    - rows=9999  
+        Optional  
+        Method: GET  
+        Requests from 1 to 9999 key/values be returned in a single request. This return body is heavily impacted by the **_keysonly_** and **_delim_** query parameters. See examples below how the body changes using the different parameters.  
+        Its possible not to receive the full number of rows as requested. This parameter can be stopped early with the custom **zFAM-RangeEnd** header which sets the end terminating string value for the key to stop at. Or if the zFAM instance reached the end of the key list.  
+
     - keysonly  
-    Optional  
-    Method: GET  
-    There is no value associated with this parameter and it requests to only retrieve the key values. Primarily used with the **rows** parameter to retrieve a list of keys in the zFAM instance.
+        Optional  
+        Method: GET  
+        There is no value associated with this parameter and it requests to only retrieve the key values. Primarily used with the **rows** parameter to retrieve a list of keys in the zFAM instance.
 
     - delim={char}  
     Optional  
     Method: GET  
     This parameter works with the **rows** parameter to specify a single byte delimiter character to be placed between each of the key/value sets returned with multiple rows. See the examples below on how the body format changes when using this option.
-   
+
     - eq/ge/gt/le/lt  
     Optional  
     Method: GET  
@@ -82,7 +110,7 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         - gt: Read "greater than"
         - le: Read "less than equal to"
         - lt: Read "less than"
-    
+
 **Note:** Each of the GET query string parameters drive up to three different response bodies. See the Examples section for details.
 
 - POST - Add values to zFAM. Requires a body containing the data to save under specified key.  

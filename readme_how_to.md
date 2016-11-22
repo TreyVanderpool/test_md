@@ -14,11 +14,11 @@
     Requires a body containing the data to save under specified key.
     
 - DELETE - _(Remove values from zFAM)_  
-    http://hostname:port@path@@key@?@query_string_parms@  
+    http://hostname:port@path@@key@  
     No body
 
 ## Basic Mode
-- **Query string parameters (Basic Mode):**
+- **Query string parameters:**
     - GET
         - rows=9999
         - keysonly
@@ -27,7 +27,7 @@
     - POST/PUT
         - ttl=99999
 
-- **HTTP Headers (Basic Mode):**
+- **HTTP Headers:**
     - GET
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
@@ -47,7 +47,7 @@
         - zFAM-RangeBegin: @string_value@
         - zFAM-RangeEnd: @string_value@
 
-- **Definitions for each of the query strings and headers (Basic Mode):**
+- **Definitions for each of the query strings and headers:**
     - rows=9999  
         Optional  
         Method: GET  

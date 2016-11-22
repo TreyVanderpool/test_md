@@ -52,7 +52,7 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
     No body
 
 ###Basic Mode
-- **Query string parameters:**
+- **Query string parameters (Basic Mode):**
     - GET
         - rows=9999
         - keysonly
@@ -63,7 +63,7 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
     - POST/PUT
         - ttl=99999
 
-- **HTTP Headers:**
+- **HTTP Headers (Basic Mode):**
     - GET
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
@@ -86,7 +86,7 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         - zFAM-RangeBegin: @string_value@
         - zFAM-RangeEnd: @string_value@
 
-- **Definitions for each of the query strings and headers:**
+- **Definitions for each of the query strings and headers (Basic Mode):**
     - rows=9999  
         Optional  
         Method: GET  
@@ -215,22 +215,52 @@ Query mode parameters are limited to two values, one to turn on query mode and t
     Refer to the "Query Mode command syntax" section below for syntax.
   
 
-## Query Mode command syntax:
+###Query Mode
+Query mode functions more like a NoSQL system with the ability to query by column names and apply where predicates. Columns are defined in the installation documentation and can be updated after the zFAM instance has been created.
 
-- SELECT,|**_fields_**|,|**_where_**|,|**_options_**|
-    The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance and limited operator functions.
+- **Query string parameters (Query Mode):**
+
+    - zQL  
+        Required  
+        Method: GET/POST/PUT/DELETE  
+        This parameter specifies Query Mode and required on all query mode requests.
+
+    - SELECT  
+        The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance with no joins to other instances and limited operator functions.  
+        Refer to the "Query Mode command syntax" section below for syntax.
+
+- **HTTP Headers (Query Mode):**
+    - GET
+        - Content-Type: @content-type@
+        - Authorization: @Basic Auth Mode@
+
+    - POST
+        - Content-Type: @content-type@
+        - Authorization: @Basic Auth Mode@
+
+    - PUT
+        - Content-Type: @content-type@
+        - Authorization: @Basic Auth Mode@
+
+    - DELETE
+        - Authorization: @Basic Auth Mode@
+
+- **Query Mode Command Syntax:**
+
+    - SELECT,|**_fields_**|,|**_where_**|,|**_options_**|  
+        The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance and limited operator functions.
   
-  - **fields** construct
-    (FIELDS(**_col_name_**),(**_col_name_**),...)
-    This requests the column names to retrieve.
-  - **where** construct
-    (WHERE(**_col_name_{oper}_value_**),(**_col_name_oper_value_**),...)
-    **_{oper}_** value can be = (equal), > (greater than) or + (greater than equal to).
-    Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.
-    Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
-  - **options** construct
-    (OPTIONS(ROWS=9999))
-    This is optional and provides a way to limit the number of records returned by the service. The valid values are 1 to 9999.
+      - **fields** construct  
+        (FIELDS(**_col_name_**),(**_col_name_**),...)  
+        This requests the column names to retrieve.  
+      - **where** construct  
+        (WHERE(**_col_name_{oper}_value_**),(**_col_name_oper_value_**),...)  
+        **_{oper}_** value can be = (equal), > (greater than) or + (greater than equal to).  
+        Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.  
+        Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.  
+      - **options** construct  
+        (OPTIONS(ROWS=9999))  
+        This is optional and provides a way to limit the number of records returned by the service. The valid values are 1 to 9999.
     
     ####Examples:
     Small zFAM query mode instance that contains the following attributes:

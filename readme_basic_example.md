@@ -42,7 +42,9 @@ In the following examples we'll show how to add, update, delete and retrieve val
 
 1. Retrieve the value for a single key, "mlb_rangers".  
     GET http://zos.com:777/pro/league/teams/mlb_rangers  
-    Body: None
+    Body: None  
+    Request Headers:  
+    - None
 
     HTTP Code: 200  
     HTTP Text: Ok  
@@ -57,7 +59,9 @@ The body format changes to reflect all the keys and values returned by the reque
     - value, 1 to 3.2MB value.  
 
     GET http://zos.com:777/pro/league/teams/mlb?ge,rows=3  
-    Body: None
+    Body: None  
+    Request Headers:  
+    - None
 
     HTTP Code: 200  
     HTTP Text: mlb\_dodgers  
@@ -71,7 +75,9 @@ Two header values will be returned showing the number of rows retrieved and the 
 The body format changes to reflect all the keys and values delimited by the **delim** character. Again, there are no quotes around the key or value strings.
 
     GET http://zos.com:777/pro/league/teams/mlb?ge,rows=3,delim=|  
-    Body: None
+    Body: None  
+    Request Headers:  
+    - None
 	
     HTTP Code: 200  
     HTTP Text: mlb\_dodgers  
@@ -112,7 +118,8 @@ The body format changes to reflect all the keys and values delimited by the **de
 
     POST http://zos.com:777/pro/league/teams/nfl_cowboys
     Body: { "name" : "Dallas Cowboys", "players" : 53 }
-    Request Headers: None
+    Request Headers:  
+    - None
     
     HTTP Code: 200
     HTTP Text: Ok
@@ -123,17 +130,17 @@ The body format changes to reflect all the keys and values delimited by the **de
 
     PUT http://zos.com:777/pro/league/teams/nfl_cowboys?ttl=3650
     Body: { "name" : "Dallas Cowboys", "players" : 55 }
-    Request Headers: None
+    Request Headers: None  
     
-    HTTP Code: 200
-    HTTP Text: Ok
-    Body: None
-    Response Headers: None
+    HTTP Code: 200  
+    HTTP Text: Ok  
+    Body: None  
+    Response Headers: None  
 
 8. Delete the "Minnesota Twins" from the "mlb" team list.
 
     DELETE http://zos.com:777/pro/league/teams/mlb_twins
-    Body: None
+    Body: None  
     Request Headers: None
     
     HTTP Code: 200

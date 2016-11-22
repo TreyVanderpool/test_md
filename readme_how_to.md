@@ -52,8 +52,8 @@
         Optional  
         Method: GET  
         Valid Values: Numeric value between 1 and 9999  
-        Requests from 1 to 9999 key/values be returned in a single request. This return body is heavily impacted by the **_keysonly_** and **_delim_** query parameters. See examples below how the body changes using the different parameters.  
-        Its possible not to receive the full number of rows as requested. This parameter can be stopped early with the custom **zFAM-RangeEnd** header which sets the end terminating string value for the key to stop at. Or if the zFAM instance reached the end of the key list.  
+        Requests from 1 to 9999 key/values be returned in a single request. This return body is heavily impacted by the **_keysonly_** and **_delim_** query parameters. See [examples](./readme_basic_example.md) on how the body changes using the different parameters.  
+        There may be cases where you do not receive the full number of rows requested. If you reach the end of your zFAM instance or the custom **zFAM-RangeEnd** header is used to terminate the query.   
 
     - keysonly  
         Optional  
@@ -64,12 +64,12 @@
         Optional  
         Method: GET  
         Valid Values: Single byte character, can be a URL encoded value like %047  
-        This parameter works with the **rows** parameter to specify a single byte delimiter character to be placed between each of the key/value sets returned with multiple rows. See the examples below on how the body format changes when using this option.
+        This parameter works with the **rows** parameter to specify a single byte delimiter character to be placed between each of the key/value sets returned with multiple rows. See the [examples](./readme_basic_example.md) on how the body format changes when using this option.
 
     - eq/ge/gt/le/lt  
         Optional  
         Method: GET  
-        Special read options to drive the flow of the request. The default value is **eq**. Examples below show how to use these parameters to read multiple key/value pairs with a single request.
+        Special read options to drive the flow of the request. The default value is **eq**. [Examples](./readme_basic_example.md) show how to use these parameters to read multiple key/value pairs with a single request.
         - eq: Read "equal to", mutually exclusive with **rows** parameter.
         - ge: Read "greater than equal to"
         - gt: Read "greater than"
@@ -80,7 +80,7 @@
         Optional  
         Method: POST/PUT  
         Valid Values: Numeric value between 1 (1 day) and 36500 (100 years)  
-        Specifies time to live in days for each key. It's a numeric value between 1 and 36500 (100 years) days. If not specified it defaults 2555 days (7 year). The built-in background expiration process automatically cleans up expired keys. 
+        Specifies time to live in days for each key and each key can have their own unique time to live value. If not specified it defaults 2555 days (7 years). The built-in background expiration process automatically cleans up expired keys. 
 
     - Content-Type: {content-type}  
         Optional  
@@ -88,7 +88,7 @@
         Mode: Basic and Query  
         Request and Response  
         Valid Values: Standard content type values. "text/\*" prefixed values control data conversion  
-        This is a standard HTTP header but drives some functionality by the service.  
+        This is a standard HTTP header but drives some functionality in the service.  
         When a record being stored or retrieved is not to be translated between EBCDIC and ASCII, set the content type to anything other than text/\*. When a record being stored or retrieved is to be translated between EBCDIC and ASCII (text information accessible to all platforms), set the content type to text/\* (text/anything). All content type of text/\* will be translated between EBCDIC and ASCII on GET, POST, and PUT requests.
 	
     - Authorization: @Basic Auth Mode@  
@@ -102,11 +102,11 @@
 
     - zFAM-Modulo: 99  
         Optional  
-        Method: POST/PUT  
+        Method: POST  
         Mode: Basic and Query  
         Request Only  
         Valid Values: Numeric value between 1 and 99  
-        Used with the **zFAM-UID** header on both basic and query mode to automatically generate a 37 character UID on inserts. It automatically creates a 4 byte numeric starting key when storing data into the zFAM system. The value sent can be from 01 to 99 and will auto-increment the key data when posted, so if 99 is always sent, the first modulo will be 0001/, the second will be 0002/, and so on until 0099/, then it rolls back to 0001/ on the next POST/PUT.  
+        Used solely with the **zFAM-UID** header on both basic and query mode to automatically generate a 37 character UID on inserts. If the **zFAM-UID** header is not included this request is ignored and normal processing occurs for the key. The generated key consists of a 4 character numeric value of the "modulo" results, "/" and 32 character UID. The modulo value sent can be from 01 to 99 and will auto-increment the key data when posted, so if 99 is always sent, the first modulo will be 0001/, the second will be 0002/, and so on until 0099/, then it rolls back to 0001/ on the next POST/PUT.  
         The new key will also be returned in the HTTP status text.  
         Example of new key generated is {4_char_modulo_nbr/32_char_UID}  
         0001/2e7d0f1f00d1aa9261969bc90d306f23  
@@ -114,10 +114,14 @@
 	
     - zFAM-UID: yes  
         Optional  
-        Method: POST/PUT  
+        Method: POST  
         Mode: Basic and Query  
         Request Only  
-        This feature only works with the **zFAM-Modulo** header and instructs the service to generate a 32 character UID as part of the key. The only valid value is "yes".
+        Valid Values: yes  
+        This feature can be used to auto generate a unique key for both basic and query mode formats. For basic mode requests it can generate two different keys depending on the **zFAM-Modulo** header. With **zFAM-Modulo** it creates the 37 character key listed above in the **zFAM-Modulo** definition and without it it returns the "plain" 32 character UID.  
+	In query mode it generates the "plain" 32 character UID and uses that in the primary key field.  
+	In both cases the new UID key is returned in the HTTP Status field.  
+	**Note:** When this header is used zFAM ignores the "key" passed on the URL and inserts the value using this generated key.  
 
     - zFAM-RangeBegin: @string_value@  
         Optional  
@@ -133,7 +137,7 @@
         Mode: Basic only  
         Request Only  
         Valid Values: Key string 1 to 255 characters, no embedded spaces  
-        Used with the GET and DELETE methods to stop processing of keys when it reaches this key value. This defines the ending key name to stop processing at. The maximum number of keys deleted in a single request is 1,000 and the max keys read depend on the buffer size and **rows** parameter.
+        Defines the ending key name to stop processing at. Used with the GET and DELETE methods to stop processing of keys when it reaches this key value.  The maximum number of keys deleted in a single request is 1,000 and the max keys read depend on the buffer size and **rows** parameter.
 
     - zFAM-LastKey: @string_value@  
         Optional  
@@ -141,7 +145,7 @@
         Mode: Basic only  
         Response Only  
         Valid Values: Key string 1 to 255 characters  
-        This is a returned header value indicating the last key value returned by the service. This is primarily used with the **rows** query string so you can use this key to issue a GET with **_gt_** option to read next set of keys.
+        This is a returned header value indicating the last key value returned by the service. This is used with the **rows** query string so you can use this key to issue a GET with **_gt_** option to read next set of keys.
 
     - zFAM-LOB: yes  
         Optional  
@@ -177,13 +181,15 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance with no joins to other instances and limited operator functions.  
         Refer to the "Query Mode command syntax" section below for syntax.
 
-- **HTTP Headers (Query Mode):**
+- **HTTP Headers (Query Mode):**  
+    Refer to the descriptions in the basic mode section above.
     - GET
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
     - POST
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
+        - zFAM-UID: yes
     - PUT
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
@@ -207,12 +213,12 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         This is optional and provides a way to limit the number of records returned by the service. The valid values are 1 to 9999.
     
     - INSERT,|**_fields_**|  
-        Inserts a single record into a zFAM instance. Insert command is only valid with the POST method for the service.  
+        Inserts a single record into a zFAM instance. Insert command is only valid with the POST method for the service and must appear in the body of the request.  
         - **fields** construct  
         (FIELDS(**_col\_name=value_**),(**_col\_name=value_**),...{repeat}...)  
         
     - UPDATE,|**_fields_**|,|**_where_**|  
-        Updates a single record in a zFAM instance. Update command is only valid with the PUT method for the service.  
+        Updates a single record in a zFAM instance. Update command is only valid with the PUT method for the service and must appear in the body of the request.  
         - **fields** construct  
         (FIELDS(**_col_name=value_**),(**_col_name=value_**),...)  
         - **where** construct  
@@ -230,17 +236,11 @@ Query mode functions more like a NoSQL system with the ability to query by colum
 ## Installation
 Refer to the [installation instructions](./readme_install.md) for complete setup in the z/OS environment.
 
-    
 ## Contributors
 
 - **_Randy Frerking_**,	Walmart Stores Inc.
 - **_Rich Jackson_**, Walmart Stores Inc.
 - **_Michael Karagines_**, Walmart Stores Inc.
-
-## License
-
-A short snippet describing the license (MIT, Apache, etc.)
-
 
 ## Additional Info
 

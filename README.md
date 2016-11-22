@@ -57,9 +57,7 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         - rows=9999
         - keysonly
         - delim=@char@
-
         **Note:** Each of the GET query string parameters drive up to three different response bodies. See the Examples section for details.
-
     - POST/PUT
         - ttl=99999
 
@@ -69,19 +67,16 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         - Authorization: @Basic Auth Mode@
         - zFAM-RangeEnd: @string_value@
         - zFAM-LastKey: @string_value@
-
     - POST
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
         - zFAM-UID: yes
         - zFAM-Modulo: 99
-
     - PUT
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
         - zFAM-LOB: yes
         - zFAM-Append: yes
-
     - DELETE
         - zFAM-RangeBegin: @string_value@
         - zFAM-RangeEnd: @string_value@
@@ -189,10 +184,10 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         Request Only  
         Valid Values: yes  
         This header works with the **zFAM-Append** header to extend an existing key value up to 2GB in size. The max payload size for Large Binary Objects is 200MB but you can send multiple PUT requests to append data.
-        Say you want to put 550MB file in your zFAM instance:
-        - POST ... zFAM-LOB: yes   {200MB of data}
-        - PUT ... zFAM-LOB: yes, zFAM-Append: yes   {200MB of data}
-	- PUT ... zFAM-LOB: yes, zFAM-Append: yes   {150MB of data}
+        Say you want to put 550MB file in your zFAM instance:  
+        - POST ... zFAM-LOB: yes   {200MB of data}  
+        - PUT ... zFAM-LOB: yes, zFAM-Append: yes   {200MB of data}  
+        - PUT ... zFAM-LOB: yes, zFAM-Append: yes   {150MB of data}
 
     - zFAM-Append: yes  
         Optional  

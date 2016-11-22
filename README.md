@@ -261,7 +261,7 @@ Variables used in these examples:
 - **_@key@_** is 1 to 255 character value that represents the key
 
 ### Example URL calls (Basic Mode):
-In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode.
+In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode and the **@path@** name is "/pro/league/teams/".
 
 | Key | Value |
 | --- | --- |
@@ -299,76 +299,106 @@ In the following examples we'll assume there are the following keys in the zFAM 
 | nfl_bills | { "name" : "Buffalo Bills", "players" : 53 } |
 
 
-- GET - http://hostname:port@path@@key@
-	No body.
+1. Retrieve the value for a single key, "mlb_rangers".  
+    GET http://zos.com:777/pro/league/teams/mlb_rangers  
+    Body: None
 
-	1. Retrieve the value for a single key, "mlb_rangers".
-	http://hostname:port**_@path@mlb\_rangers_**
-	
-	HTTP Code: 200
-	HTTP Text: Ok
-	Body: { "name" : "Texas Rangers", "players" : 26 }
-	
-	2. Retrieve a list of the first 3 "mlb" teams. Use the **_ge_** and **_rows_** query parameters. The **ge** query parameter asks the service to return rows "greater than or equal to" the key value and **rows** indicates how many rows to return with this request.  
-	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.  
-	The body format changes to reflect all the keys and values returned by the request. Four values are repeated for each record. There are no quotes around the key or value strings. I prefer this method since it reports the true length of each key and value so it's easily parsed by lengths and don't have to worry about the data values conflicting with the delimiter character.  
-	- 3 character numeric value representing length of the key.  
-	- key, 1 to 255 byte value.  
-	- 7 character numeric value representing length of the value.  
-	- value, 1 to 3.2MB value.  
-	http://hostname:port**_@path@mlb?ge,rows=3_**  
+    HTTP Code: 200  
+    HTTP Text: Ok  
+    Body: { "name" : "Texas Rangers", "players" : 26 }  
 
-	HTTP Code: 200  
-	HTTP Text: mlb\_dodgers  
-	Body:	**010**mlb\_angels**0000049**{ "name" : "Los Angeles Angles", "players" : 26 }**010**mlb\_astros**0000045**{ "name" : "Houston Astros", "players" : 26 }**013**mlb\_athletics**0000048**{ "name" : "Oakland Athletics", "players" : 26 }  
-	Response Headers:  
-		zFAM-Rows: 3  
-		zFAM-LastKey: mlb\_dodgers  
+2. Retrieve a list of the first 3 "mlb" teams. Use the **_ge_** and **_rows_** query parameters. The **ge** query parameter asks the service to return rows "greater than or equal to" the key value and **rows** indicates how many rows to return with this request.  
+Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.  
+The body format changes to reflect all the keys and values returned by the request. Four values are repeated for each record. There are no quotes around the key or value strings. I prefer this method since it reports the true length of each key and value so it's easily parsed by lengths and don't have to worry about the data values conflicting with the delimiter character.
+    - 3 character numeric value representing length of the key.  
+    - key, 1 to 255 byte value.  
+    - 7 character numeric value representing length of the value.  
+    - value, 1 to 3.2MB value.  
 
-	3. Issue the same request as item #2 except use the **delim** query parameter. This additional parameter will change the body format and use the single byte delimiter character to delimit the data.
-	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.
-	The body format changes to reflect all the keys and values delimited by the **delim** character. Again, there are no quotes around the key or value strings.
-	http://hostname:port**_@path@mlb?ge,rows=3,delim=|_**
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_dodgers
-	Body:	mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }
-	Returned Headers:
-		zFAM-Rows: 3
-		zFAM-LastKey: mlb\_dodgers
-		
-	4. Let's query all the **mlb** teams and use the **zFAM-RangeEnd** custom header to stop the query when the key changes from **mlb**. We will increase the **rows** value cause we're not sure how many are in the list and let the **zFAM-RangeEnd** header terminate the list. The **zFAM-Rows** response header will return the number of key/values returned in the body.
-	http://hostname:port**_@path@mlb?ge,rows=999,delim=|_**
-	Request Headers:
-		zFAM-RangeEnd: mlb
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_yankees
-	Body:	mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }|..._(continues for all 30 teams)_
-	Response Headers:
-		zFAM-Rows: 30
-		zFAM-LastKey: mlb\_yankees
-		
-	5. There will be times you just want to see the keys in your zFAM instance. We can do this with the **keysonly** query string parameter. This example will retrieve all the **mlb** keys only. Very similar to #4.
-	http://hostname:port**_@path@mlb?ge,rows=999,keysonly_**
-	Request Headers:
-		zFAM-RangeEnd: mlb
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_yankees
-	Body:	**010**mlb\_angels**010**mlb\_astros**013**mlb\_athletics..._(continues for all 30 teams)_
-	Response Headers:
-		zFAM-Rows: 30
-		zFAM-LastKey: mlb\_yankees
+    GET http://zos.com:777/pro/league/teams/mlb?ge,rows=3  
+    Body: None
 
-- POST - http://hostname:port@path@@key@
-	Requires a body containing the data to save under specified key.
-	
-- PUT - http://hostname:port@path@@key@
-	Requires a body containing the data to save under specified key.
+    HTTP Code: 200  
+    HTTP Text: mlb\_dodgers  
+    Body: **010**mlb\_angels**0000049**{ "name" : "Los Angeles Angles", "players" : 26 }**010**mlb\_astros**0000045**{ "name" : "Houston Astros", "players" : 26 }**013**mlb\_athletics**0000048**{ "name" : "Oakland Athletics", "players" : 26 }  
+    Response Headers:  
+    - zFAM-Rows: 3  
+    - zFAM-LastKey: mlb\_dodgers  
 
-- DELETE - http://hostname:port@path@@key@
-	No body. The key is removed from the instance.
+3. Issue the same request as item #2 except use the **delim** query parameter. This additional parameter will change the body format and use the single byte delimiter character to delimit the data.  
+Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.  
+The body format changes to reflect all the keys and values delimited by the **delim** character. Again, there are no quotes around the key or value strings.
+
+    GET http://zos.com:777/pro/league/teams/mlb?ge,rows=3,delim=|  
+    Body: None
+	
+    HTTP Code: 200  
+    HTTP Text: mlb\_dodgers  
+    Body: mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }  
+    Returned Headers:
+    - zFAM-Rows: 3
+    - zFAM-LastKey: mlb\_dodgers
+	
+4. Let's query all the **mlb** teams and use the **zFAM-RangeEnd** custom header to stop the query when the key changes from **mlb**. We will increase the **rows** value cause we're not sure how many are in the list and let the **zFAM-RangeEnd** header terminate the list. The **zFAM-Rows** response header will return the number of key/values returned in the body.  
+
+    GET http://zos.com:777/pro/league/teams/mlb?ge,rows=999,delim=|  
+    Body: None
+    Request Headers:  
+    - zFAM-RangeEnd: mlb  
+
+    HTTP Code: 200  
+    HTTP Text: mlb\_yankees  
+    Body: mlb\_angels|{ "name" : "Los Angeles Angles", "players" : 26 }|mlb\_astros|{ "name" : "Houston Astros", "players" : 26 }|mlb\_athletics|{ "name" : "Oakland Athletics", "players" : 26 }|..._(continues for all 30 teams)_  
+    Response Headers:  
+    - zFAM-Rows: 30  
+    - zFAM-LastKey: mlb\_yankees
+	
+5. There will be times you just want to see the keys in your zFAM instance. We can do this with the **keysonly** query string parameter. This example will retrieve all the **mlb** keys only. Very similar to #4 except we use the default multi-row body response.  
+
+    GET http://zos.com:777/pro/league/teams/mlb?ge,rows=999,keysonly  
+    Body: None
+    Request Headers:  
+    - zFAM-RangeEnd: mlb  
+
+    HTTP Code: 200  
+    HTTP Text: mlb\_yankees  
+    Body: **010**mlb\_angels**010**mlb\_astros**013**mlb\_athletics..._(continues for all 30 teams)_  
+    Response Headers:  
+    - zFAM-Rows: 30  
+    - zFAM-LastKey: mlb\_yankees
+
+6. Add a new key/value entry to the same pro team zFAM instance. Insert a new "nfl" team for the "Dallas Cowboys". We'll accept the default time-to-live value of 7 years (2555 days).
+
+    POST http://zos.com:777/pro/league/teams/nfl_cowboys
+    Body: { "name" : "Dallas Cowboys", "players" : 53 }
+    Request Headers: None
+    
+    HTTP Code: 200
+    HTTP Text: Ok
+    Body: None
+    Response Headers: None
+
+7. Update the previously inserted "mlb_cowboys" data to reflect there are 55 players on the team and change the time-to-live value to 10 years (3650 days).
+
+    PUT http://zos.com:777/pro/league/teams/nfl_cowboys?ttl=3650
+    Body: { "name" : "Dallas Cowboys", "players" : 55 }
+    Request Headers: None
+    
+    HTTP Code: 200
+    HTTP Text: Ok
+    Body: None
+    Response Headers: None
+
+8. Delete the "Minnesota Twins" from the "mlb" team list.
+
+    DELETE http://zos.com:777/pro/league/teams/mlb_twins
+    Body: None
+    Request Headers: None
+    
+    HTTP Code: 200
+    HTTP Text: Ok
+    Body: None
+    Response Headers: None
 
     
     ####Examples:

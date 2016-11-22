@@ -90,6 +90,7 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
     - rows=9999  
         Optional  
         Method: GET  
+        Valid Values: Numeric value between 1 and 9999  
         Requests from 1 to 9999 key/values be returned in a single request. This return body is heavily impacted by the **_keysonly_** and **_delim_** query parameters. See examples below how the body changes using the different parameters.  
         Its possible not to receive the full number of rows as requested. This parameter can be stopped early with the custom **zFAM-RangeEnd** header which sets the end terminating string value for the key to stop at. Or if the zFAM instance reached the end of the key list.  
 
@@ -98,9 +99,10 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         Method: GET  
         There is no value associated with this parameter and it requests to only retrieve the key values. Primarily used with the **rows** parameter to retrieve a list of keys in the zFAM instance.
 
-    - delim={char}  
+    - delim=@char@  
         Optional  
         Method: GET  
+        Valid Values: Single byte character, can be a URL encoded value like %047  
         This parameter works with the **rows** parameter to specify a single byte delimiter character to be placed between each of the key/value sets returned with multiple rows. See the examples below on how the body format changes when using this option.
 
     - eq/ge/gt/le/lt  
@@ -116,13 +118,24 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
     - ttl=99999  
         Optional  
         Method: POST/PUT  
+        Valid Values: Numeric value between 1 (1 day) and 36500 (100 years)  
         Specifies time to live in days for each key. It's a numeric value between 1 and 36500 (100 years) days. If not specified it defaults 2555 days (7 year). The built-in background expiration process automatically cleans up expired keys. 
 
     - Content-Type: {content-type}  
+        Optional  
+        Method: GET/POST/PUT  
+        Mode: Basic and Query  
+        Request and Response  
+        Valid Values: Standard content type values. "text/\*" prefixed values control data conversion  
         This is a standard HTTP header but drives some functionality by the service.  
         When a record being stored or retrieved is not to be translated between EBCDIC and ASCII, set the content type to anything other than text/\*. When a record being stored or retrieved is to be translated between EBCDIC and ASCII (text information accessible to all platforms), set the content type to text/\* (text/anything). All content type of text/\* will be translated between EBCDIC and ASCII on GET, POST, and PUT requests.
 	
     - Authorization: @Basic Auth Mode@  
+        Optional  
+        Method: GET/POST/PUT/DELETE  
+        Mode: Basic and Query  
+        Request Only  
+        Valid Values: Standard basic authorization string, base 64 encoded user:password  
         This is a standard HTTP header and used with the HTTPS requests. Standard basic mode authorization syntax where the RACF user and password are encoded base64 values.  
         `Authorization: Basic BASE64ENCODEDUSERANDPASS==`
 
@@ -130,8 +143,11 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         Optional  
         Method: POST/PUT  
         Mode: Basic and Query  
-        Used with the zFAM-UID header on both basic and query mode to automatically generate a 37 character UID on inserts. It automatically creates a 4 byte numeric starting key when storing data into the zFAM system. The value sent can be from 01 to 99 and will auto-increment the key data when posted, so if 99 is always sent, the first modulo will be 0001/, the second will be 0002/, and so on until 0099/, then it rolls back to 0001/ on the next POST/PUT.  
-        New key generated and returned in the HTTP status field is {4_char_modulo_nbr/32_char_UID}  
+        Request Only  
+        Valid Values: Numeric value between 1 and 99  
+        Used with the **zFAM-UID** header on both basic and query mode to automatically generate a 37 character UID on inserts. It automatically creates a 4 byte numeric starting key when storing data into the zFAM system. The value sent can be from 01 to 99 and will auto-increment the key data when posted, so if 99 is always sent, the first modulo will be 0001/, the second will be 0002/, and so on until 0099/, then it rolls back to 0001/ on the next POST/PUT.  
+        The new key will also be returned in the HTTP status text.  
+        Example of new key generated is {4_char_modulo_nbr/32_char_UID}  
         0001/2e7d0f1f00d1aa9261969bc90d306f23  
         0002/2e7d0f2f00d1aa926b0d309a08ad1dea
 	
@@ -139,35 +155,52 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         Optional  
         Method: POST/PUT  
         Mode: Basic and Query  
-        This feature only works with the zFAM-Modulo header and instructs the service to generate a 32 character UID as part of the key. The only valid value is "yes".
+        Request Only  
+        This feature only works with the **zFAM-Modulo** header and instructs the service to generate a 32 character UID as part of the key. The only valid value is "yes".
 
     - zFAM-RangeBegin: @string_value@  
         Optional  
         Method: DELETE  
         Mode: Basic and Query  
-        Used with the DELETE method to control a range of values to be deleted. This sets the starting string value for the range of keys to be deleted. The maximum number of records deleted in a single request is 1,000. The maximum string length is 255 characters with no embedded spaces.
+        Request Only  
+        Valid Values: Key string 1 to 255 characters, no embedded spaces  
+        Used with the DELETE method to control a range of values to be deleted. Represents the 1 to 255 character key value to start deleting at. The maximum number of records deleted in a single request is 1,000.
 
     - zFAM-RangeEnd: @string_value@  
         Optional  
         Method: GET/DELETE  
         Mode: Basic only  
-        Used with the GET and DELETE methods to stop processing of keys when it reaches this key value. This defines the ending string value to stop processing at. The maximum number of records deleted in a single request is 1,000. The maximum string length is 255 characters with no embedded spaces.
+        Request Only  
+        Valid Values: Key string 1 to 255 characters, no embedded spaces  
+        Used with the GET and DELETE methods to stop processing of keys when it reaches this key value. This defines the ending key name to stop processing at. The maximum number of keys deleted in a single request is 1,000 and the max keys read depend on the buffer size and **rows** parameter.
 
     - zFAM-LastKey: @string_value@  
         Optional  
         Method: GET  
         Mode: Basic only  
+        Response Only  
+        Valid Values: Key string 1 to 255 characters  
         This is a returned header value indicating the last key value returned by the service. This is primarily used with the **rows** query string so you can use this key to issue a GET with **_gt_** option to read next set of keys.
 
     - zFAM-LOB: yes  
         Optional  
         Method: POST/PUT  
         Mode: Basic only
+        Request Only  
+        Valid Values: yes  
+        This header works with the **zFAM-Append** header to extend an existing key value up to 2GB in size. The max payload size for Large Binary Objects is 200MB but you can send multiple PUT requests to append data.
+        Say you want to put 550MB file in your zFAM instance:
+        - POST ... zFAM-LOB: yes   {200MB of data}
+        - PUT ... zFAM-LOB: yes, zFAM-Append: yes   {200MB of data}
+	- PUT ... zFAM-LOB: yes, zFAM-Append: yes   {150MB of data}
 
     - zFAM-Append: yes  
         Optional  
         Method: POST/PUT
         Mode: Basic only
+        Request Only  
+        Valid Values: yes  
+        This header works solely with the **zFAM-LOB** header to append data to Large Binary Objects.
 
 ### Query Mode Query string parameters:
 Query mode parameters are limited to two values, one to turn on query mode and the other are the selection criteria. The INSERT and UPDATE functions are posted in the body of the requests.

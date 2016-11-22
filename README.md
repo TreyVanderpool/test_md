@@ -21,7 +21,7 @@ zFAM is a cloud enabled distributed NoSQL key/value store (KVS) file systemin th
 - Built-in expiration process.
 - Multiple modes of operation:
   - Basic Mode: Simple key/value pair
-  - Query/zQL Mode: Functions a little like a DBMS with SELECT/INSERT/UPDATE/DELETE commands.
+  - Query/zQL Mode: Functions a little like a DBMS with SELECT/INSERT/UPDATE commands.
 - Six Sigma Availablility:
   - Active/Single (High Availability at a single data center)
   - Active/Standby (High Availability across multiple data centers)
@@ -197,30 +197,17 @@ Note: The keys are actually stored in an indexed VSAM file so the keys are store
         Valid Values: yes  
         This header works solely with the **zFAM-LOB** header to append data to Large Binary Objects.
 
-### Query Mode Query string parameters:
-Query mode parameters are limited to two values, one to turn on query mode and the other are the selection criteria. The INSERT and UPDATE functions are posted in the body of the requests.
-
-- zQL
-    Required
-    Method: GET/POST/PUT/DELETE
-    This parameter specifies Query Mode!
-    
-- SELECT
-    The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance with no joins to other instances and limited operator functions.
-    Refer to the "Query Mode command syntax" section below for syntax.
-  
-
 ###Query Mode
-Query mode functions more like a NoSQL system with the ability to query by column names and apply where predicates. Columns are defined in the installation documentation and can be updated after the zFAM instance has been created.
+Query mode functions more like a NoSQL system with the ability to query by column names and apply where predicates. Columns are defined in the installation documentation and can be updated after the zFAM instance has been created. To query the data you use the SELECT query mode command and the INSERT and UPDATE functions are posted in the body of POST/PUT requests.
 
-- **Query string parameters (Query Mode):**
-
+- **Query string parameters (Query Mode):**  
     - zQL  
         Required  
         Method: GET/POST/PUT/DELETE  
         This parameter specifies Query Mode and required on all query mode requests.
-
     - SELECT  
+        Optional  
+        Method: GET
         The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance with no joins to other instances and limited operator functions.  
         Refer to the "Query Mode command syntax" section below for syntax.
 
@@ -228,15 +215,12 @@ Query mode functions more like a NoSQL system with the ability to query by colum
     - GET
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
-
     - POST
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
-
     - PUT
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
-
     - DELETE
         - Authorization: @Basic Auth Mode@
 
@@ -244,7 +228,6 @@ Query mode functions more like a NoSQL system with the ability to query by colum
 
     - SELECT,|**_fields_**|,|**_where_**|,|**_options_**|  
         The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance and limited operator functions.
-  
       - **fields** construct  
         (FIELDS(**_col_name_**),(**_col_name_**),...)  
         This requests the column names to retrieve.  
@@ -257,48 +240,27 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         (OPTIONS(ROWS=9999))  
         This is optional and provides a way to limit the number of records returned by the service. The valid values are 1 to 9999.
     
-    ####Examples:
-    Small zFAM query mode instance that contains the following attributes:
-    - org_type: team originization type, "mlb", "nfl", "nba"
-    - team_name: name of the team
-    - players: number of players on the team
-    - salaries: total team salary
+    - INSERT,|**_fields_**|  
+        Inserts a single record into a zFAM instance. Insert command is only valid with the POST method for the service.  
+        - **fields** construct  
+        (FIELDS(**_col\_name=value_**),(**_col\_name=value_**),...{repeat}...)  
+        
+    - UPDATE,|**_fields_**|,|**_where_**|  
+        Updates a single record in a zFAM instance. Update command is only valid with the PUT method for the service.  
+        - **fields** construct  
+        (FIELDS(**_col_name=value_**),(**_col_name=value_**),...)  
+        - **where** construct  
+        (WHERE(**_col_name=value_**),(**_col_name=value_**),...)  
+        Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.  
+        Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
     
-    List all teams for the "mlb":
-    ?zQL,SELECT,(FIELDS(org_type),(team)),(WHERE(org_type=mlb))
-    
-    List all teams, number of players and team salaries for the "nfl":
-    ?zQL,SELECT,(FIELDS(team),(players),(salaries)),(WHERE((org_type=nfl))
-    
-    List 10 of the "nba" teams:
-    ?zQL,SELECT,(FIELDS(team),(players),(salaries)),(OPTIONS(ROWS=10))
-    
-    
-- INSERT,|**_fields_**|
-    Inserts a single record into a zFAM instance. Insert command is only valid with the POST method for the service.
-    
-  - **fields** construct
-    (FIELDS(**_col_name=value_**),(**_col_name=value_**),...)
-    
-- UPDATE,|**_fields_**|,|**_where_**|
-    Updates a single record in a zFAM instance. Update command is only valid with the PUT method for the service.
-    
-  - **fields** construct
-    (FIELDS(**_col_name=value_**),(**_col_name=value_**),...)
-
-  - **where** construct
-    (WHERE(**_col_name=value_**),(**_col_name=value_**),...)
-    Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.
-    Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
-
-
 ## Code Examples
 Variables used in these examples:
 - **_hostname:port_** values are all site specific
 - **_@path@_** is defined by the team that sets up the zUID service
 - **_@key@_** is 1 to 255 character value that represents the key
 
-### Example URL calls:
+### Example URL calls (Basic Mode):
 In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode.
 
 | Key | Value |
@@ -347,22 +309,22 @@ In the following examples we'll assume there are the following keys in the zFAM 
 	HTTP Text: Ok
 	Body: { "name" : "Texas Rangers", "players" : 26 }
 	
-	2. Retrieve a list of the first 3 "mlb" teams. Use the **_ge_** and **_rows_** query parameters. The **ge** query parameter asks the service to return rows "greater than or equal to" the key value and **rows** indicates how many rows to return with this request.
-	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.
-	The body format changes to reflect all the keys and values returned by the request. Four values are repeated for each record. There are no quotes around the key or value strings. I prefer this method since it reports the true length of each key and value so it's easily parsed by lengths and don't have to worry about the data values conflicting with the delimiter character.
-	- 3 character numeric value representing length of the key.
-	- key, 1 to 255 byte value.
-	- 7 character numeric value representing length of the value.
-	- value, 1 to 3.2MB value.
-	http://hostname:port**_@path@mlb?ge,rows=3_**
-	
-	HTTP Code: 200
-	HTTP Text: mlb\_dodgers
-	Body:	**010**mlb\_angels**0000049**{ "name" : "Los Angeles Angles", "players" : 26 }**010**mlb\_astros**0000045**{ "name" : "Houston Astros", "players" : 26 }**013**mlb\_athletics**0000048**{ "name" : "Oakland Athletics", "players" : 26 }
-	Response Headers:
-		zFAM-Rows: 3
-		zFAM-LastKey: mlb\_dodgers
-	
+	2. Retrieve a list of the first 3 "mlb" teams. Use the **_ge_** and **_rows_** query parameters. The **ge** query parameter asks the service to return rows "greater than or equal to" the key value and **rows** indicates how many rows to return with this request.  
+	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.  
+	The body format changes to reflect all the keys and values returned by the request. Four values are repeated for each record. There are no quotes around the key or value strings. I prefer this method since it reports the true length of each key and value so it's easily parsed by lengths and don't have to worry about the data values conflicting with the delimiter character.  
+	- 3 character numeric value representing length of the key.  
+	- key, 1 to 255 byte value.  
+	- 7 character numeric value representing length of the value.  
+	- value, 1 to 3.2MB value.  
+	http://hostname:port**_@path@mlb?ge,rows=3_**  
+
+	HTTP Code: 200  
+	HTTP Text: mlb\_dodgers  
+	Body:	**010**mlb\_angels**0000049**{ "name" : "Los Angeles Angles", "players" : 26 }**010**mlb\_astros**0000045**{ "name" : "Houston Astros", "players" : 26 }**013**mlb\_athletics**0000048**{ "name" : "Oakland Athletics", "players" : 26 }  
+	Response Headers:  
+		zFAM-Rows: 3  
+		zFAM-LastKey: mlb\_dodgers  
+
 	3. Issue the same request as item #2 except use the **delim** query parameter. This additional parameter will change the body format and use the single byte delimiter character to delimit the data.
 	Two header values will be returned showing the number of rows retrieved and the last key in the list. The HTTP status is also set to the last key in the list.
 	The body format changes to reflect all the keys and values delimited by the **delim** character. Again, there are no quotes around the key or value strings.
@@ -407,6 +369,23 @@ In the following examples we'll assume there are the following keys in the zFAM 
 
 - DELETE - http://hostname:port@path@@key@
 	No body. The key is removed from the instance.
+
+    
+    ####Examples:
+    Small zFAM query mode instance that contains the following attributes:
+    - org_type: team originization type, "mlb", "nfl", "nba"
+    - team_name: name of the team
+    - players: number of players on the team
+    - salaries: total team salary
+    
+    List all teams for the "mlb":
+    ?zQL,SELECT,(FIELDS(org_type),(team)),(WHERE(org_type=mlb))
+    
+    List all teams, number of players and team salaries for the "nfl":
+    ?zQL,SELECT,(FIELDS(team),(players),(salaries)),(WHERE((org_type=nfl))
+    
+    List 10 of the "nba" teams:
+    ?zQL,SELECT,(FIELDS(team),(players),(salaries)),(OPTIONS(ROWS=10))
 
 ### curl:
 - Retrieve a value from the zECS instance.

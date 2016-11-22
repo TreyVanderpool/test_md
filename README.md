@@ -255,10 +255,8 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
     
 ## Code Examples
-Variables used in these examples:
-- **_hostname:port_** values are all site specific
-- **_@path@_** is defined by the team that sets up the zUID service
-- **_@key@_** is 1 to 255 character value that represents the key
+    [Basic Mode](./readme_basic_example.md) examples
+    [Query Mode](./readme_query_example.md) examples
 
 ### Example URL calls (Basic Mode):
 In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode and the **@path@** name is "/pro/league/teams/".

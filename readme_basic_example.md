@@ -1,5 +1,8 @@
-### Example URL calls (Basic Mode):
-In the following examples we'll assume there are the following keys in the zFAM instance for the Basic Mode and the **@path@** name is "/pro/league/teams/".
+# Basic Mode Examples
+
+In the following examples we'll show how to add, update, delete and retrieve values from a zFAM instance. All the examples will use the following variables and assume the keys listed below already exist for the example.
+- hostname:port - /zos.com:777
+- @path@ - /pro/league/teams/
 
 | Key | Value |
 | --- | --- |

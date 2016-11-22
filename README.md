@@ -255,8 +255,8 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
     
 ## Code Examples
-    [Basic Mode](../readme_basic_example.md) examples
-    [Query Mode](./readme_query_example.md) examples
+- [Basic Mode](./read_basic_examples.md) Examples  
+- [Query Mode](./read_query_examples.md) Examples
 
 ## HTTP Status Codes
 - 204 01-002 xxxxxxxx GET Primary key record not found

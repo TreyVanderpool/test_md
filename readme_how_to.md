@@ -18,7 +18,7 @@
     No body
 
 ## Basic Mode
-- **Query string parameters:**
+- **Query string parameters (Basic Mode):**
     - GET
         - rows=9999
         - keysonly
@@ -27,7 +27,7 @@
     - POST/PUT
         - ttl=99999
 
-- **HTTP Headers:**
+- **HTTP Headers (Basic Mode):**
     - GET
         - Content-Type: @content-type@
         - Authorization: @Basic Auth Mode@
@@ -47,7 +47,7 @@
         - zFAM-RangeBegin: @string_value@
         - zFAM-RangeEnd: @string_value@
 
-- **Definitions for each of the query strings and headers:**
+- **Definitions for each of the query strings and headers (Basic Mode):**
     - rows=9999  
         Optional  
         Method: GET  
@@ -228,7 +228,7 @@ Query mode functions more like a NoSQL system with the ability to query by colum
 - Full list of [HTTP codes](./readme_http_codes.md)
 
 ## Installation
-Refer to the [installation instructions](https://github.com/wamasoz/ECS/blob/master/readme_install.md) for complete setup in the z/OS environment.
+Refer to the [installation instructions](./readme_install.md) for complete setup in the z/OS environment.
 
     
 ## Contributors

@@ -43,7 +43,7 @@ In the following examples we'll show how to add, update, delete and retrieve val
 1. Retrieve the value for a single key, "mlb_rangers".  
     GET http://zos.com:777/pro/league/teams/mlb_rangers  
     Body: None  
-    Request Headers:  
+    Request Headers:
     - None
 
     HTTP Code: 200  

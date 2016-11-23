@@ -1,5 +1,16 @@
     
 #Query Mode Examples:
+We'll create a small zFAM instance to store some basic MLB team data in. The examples will show how to insert, update, delete and retrieve from the datastore.
+
+Create a Query Mode zFAM instance with the following field definitions:
+- team_id: 10 characters {PRIMARY KEY, short name for teams, like 'dodgers'}
+- team: 50 character {full team name}
+- players: 3 numeric {number of players on the team}
+- win_world_series: 1 char {Y/N flag if they won the world series}
+
+1. Add a new team to the instance.
+
+
     Small zFAM query mode instance that contains the following attributes:
     - org_type: team originization type, "mlb", "nfl", "nba"
     - team_name: name of the team

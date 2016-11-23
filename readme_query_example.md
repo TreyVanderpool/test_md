@@ -84,7 +84,7 @@ Create a Query Mode zFAM instance with the following field definitions. Refer to
     - None
 
 7. Delete the Cardinals from the zFAM instance using the team_id primary key.  
-    DELETE http://zos.com:777/pro/league/teams/?zQL,DELETE,(WHERE,(team_id=cards))  
+    DELETE http://zos.com:777/pro/league/teams/?zQL,DELETE,(WHERE(team_id=cards))  
     Body: None  
     Request Headers:
     - None  

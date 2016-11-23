@@ -218,9 +218,16 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         (FIELDS(**_col\_name=value_**),(**_col\_name=value_**),...{repeat}...)  
         
     - UPDATE,|**_fields_**|,|**_where_**|  
-        Updates a single record in a zFAM instance. Update command is only valid with the PUT method for the service and must appear in the body of the request.  
+        Updates one or more records in a zFAM instance. Update command is only valid with the PUT method for the service and must appear in the body of the request.  
         - **fields** construct  
         (FIELDS(**_col_name=value_**),(**_col_name=value_**),...)  
+        - **where** construct  
+        (WHERE(**_col_name=value_**),(**_col_name=value_**),...)  
+        Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.  
+        Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
+        
+    - DELETE,|**_where_**|  
+        Deletes one or more records in a zFAM instance. Delete command is only valid with the DELETE method for the service and must appear in the body of the request.  
         - **where** construct  
         (WHERE(**_col_name=value_**),(**_col_name=value_**),...)  
         Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.  

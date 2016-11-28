@@ -52,7 +52,7 @@
         Optional  
         Method: GET  
         Valid Values: Numeric value between 1 and 9999  
-        Requests from 1 to 9999 key/values be returned in a single request. This return body is heavily impacted by the **_keysonly_** and **_delim_** query parameters. See [examples](./readme_basic_example.md) on how the body changes using the different parameters.  
+        Requests from 1 to 9999 key/values be returned in a single request. This return body is heavily impacted by the **_keysonly_** and **_delim_** query parameters. See [examples](./example_basic_mode.md) on how the body changes using the different parameters.  
         There may be cases where you do not receive the full number of rows requested. If you reach the end of your zFAM instance or the custom **zFAM-RangeEnd** header is used to terminate the query.   
 
     - keysonly  
@@ -64,12 +64,12 @@
         Optional  
         Method: GET  
         Valid Values: Single byte character, can be a URL encoded value like %047  
-        This parameter works with the **rows** parameter to specify a single byte delimiter character to be placed between each of the key/value sets returned with multiple rows. See the [examples](./readme_basic_example.md) on how the body format changes when using this option.
+        This parameter works with the **rows** parameter to specify a single byte delimiter character to be placed between each of the key/value sets returned with multiple rows. See the [examples](./example_basic_mode.md) on how the body format changes when using this option.
 
     - eq/ge/gt/le/lt  
         Optional  
         Method: GET  
-        Special read options to drive the flow of the request. The default value is **eq**. [Examples](./readme_basic_example.md) show how to use these parameters to read multiple key/value pairs with a single request.
+        Special read options to drive the flow of the request. The default value is **eq**. [Examples](./example_basic_mode.md) show how to use these parameters to read multiple key/value pairs with a single request.
         - eq: Read "equal to", mutually exclusive with **rows** parameter.
         - ge: Read "greater than equal to"
         - gt: Read "greater than"
@@ -234,11 +234,11 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
     
 ## Code Examples
-- [Basic Mode](./readme_basic_example.md) Examples  
-- [Query Mode](./readme_query_example.md) Examples
+- [Basic Mode](./example_basic_mode.md) Examples  
+- [Query Mode](./example_query_mode.md) Examples
 
 ## HTTP Status Codes
-- Full list of [HTTP codes](./readme_http_codes.md)
+- Full list of [HTTP codes](./http_response_codes.md)
 
 ## Installation
 Refer to the [installation instructions](./Installation.md) for complete setup in the z/OS environment.

@@ -16,11 +16,13 @@ Rules for the document template definition:
     - **Sec:** Security option for column.
     - **Name:** Column name
     
-    Example definition: _{dots in the name are used for formatting and should be spaces}_  
-    `----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8`
-    `ID=001,Col=0000001,Len=000032,Type=C,Sec=01,Name=Id..............|`  
-    `ID=002,Col=0000033,Len=000040,Type=C,Sec=01,Name=first_name......|`  
-    `ID=000,Col=0000073,Len=000040,Type=C,Sec=01,Name=last_name.......|`  
+    Example definition:  
+    ```
+    ----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
+    ID=001,Col=0000001,Len=000032,Type=C,Sec=01,Name=Id              |  
+    ID=002,Col=0000033,Len=000040,Type=C,Sec=01,Name=first_name      |  
+    ID=000,Col=0000073,Len=000040,Type=C,Sec=01,Name=last_name       |  
+    ```
     
     Attribute Definitions:
     - **ID:** Defines the primary and secondary indexes. 

@@ -64,7 +64,7 @@ These are returned in the COMMAREA. Make sure the COMMAREA is properly initializ
     
 # Installation
 
-Refer to the [installation instructions](./installation.md) for complete setup in the z/OS environment.
+Refer to the [installation instructions](./Installation.md) for complete setup in the z/OS environment.
 
 
 # API Reference

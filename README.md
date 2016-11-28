@@ -1,4 +1,4 @@
-## Synopsis
+# Synopsis
 
 zFAM is a cloud enabled distributed NoSQL key/value store (KVS) file systemin the z/OS environment. Very high performing and high available system used to store text or binary content. Single instances can be shared by multiple clients or unique instances can be defined for each individual client. 
 

@@ -22,8 +22,8 @@ In each of the examples the **_@path@_** variable is defined by the team that se
 ## COBOL CICS:
 All the examples are written in COBOL CICS for two reasons, 1) you can only make web service calls from CICS and 2) the actual routine has CICS API's in it so you can only link to it from a CICS program. Not able to call the routine directly from a batch environment.
 	
-- Refer to [readme_COBOL_service](https://github.com/wamasoz/zUID/blob/master/readmd_COBOL_service.md). Calls zUID as a service.
-- Refer to [readme_COBOL_link](https://github.com/wamasoz/zUID/blob/master/readme_COBOL_link.md). Calls zUID with LINK PROGRAM API.
+- Refer to [readme_COBOL_service](./readmd_COBOL_service.md). Calls zUID as a service.
+- Refer to [readme_COBOL_link](./readme_COBOL_link.md). Calls zUID with LINK PROGRAM API.
 	
 ## standard browser (Chrome, IE, Safari):
 - Request a "plain" UID from the service.
@@ -64,7 +64,7 @@ These are returned in the COMMAREA. Make sure the COMMAREA is properly initializ
     
 # Installation
 
-Refer to the [installation instructions](https://github.com/wamasoz/ECS/blob/master/readme_install.md) for complete setup in the z/OS environment.
+Refer to the [installation instructions](./installation.md) for complete setup in the z/OS environment.
 
 
 # API Reference

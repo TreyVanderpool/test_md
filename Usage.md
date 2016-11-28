@@ -25,7 +25,9 @@
         - delim=@char@
         **Note:** Each of the GET query string parameters drive up to three different response bodies. See the Examples section for details.
     - POST/PUT
-        - ttl=99999
+        - ttl=99999  
+    - DELETE
+        - None
 
 - **HTTP Headers (Basic Mode):**
     - GET
@@ -174,10 +176,10 @@ Query mode functions more like a NoSQL system with the ability to query by colum
     - zQL  
         Required  
         Method: GET/POST/PUT/DELETE  
-        This parameter specifies Query Mode and required on all query mode requests.
+        This parameter specifies Query Mode and required on all query mode requests.  
     - SELECT  
         Optional  
-        Method: GET
+        Method: GET  
         The select option functions much like an SQL statement where you can request specific columns and a where predicate. It's limited to a single zFAM instance with no joins to other instances and limited operator functions.  
         Refer to the "Query Mode command syntax" section below for syntax.
 

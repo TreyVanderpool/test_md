@@ -245,16 +245,6 @@ Refer to [security definition](./howto_define_security.md) on how to set it up a
 ## HTTP Status Codes
 - Full list of [HTTP codes](./http_response_codes.md)
 
-## Installation
-Refer to the [installation instructions](./Installation.md) for complete setup in the z/OS environment.
-
-## Contributors
-
-- **_Randy Frerking_**,	Walmart Technology
-- **_Rich Jackson_**, Walmart Technology
-- **_Michael Karagines_**, Walmart Technology
-- **_Trey Vanderpool_**, Walmart Technology
-
 ## Additional Info
 
 Most of these configuration considerations are covered in a bit more detail in a couple of Redbooks published by IBM in collaboration with the 

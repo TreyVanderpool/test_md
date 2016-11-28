@@ -244,14 +244,3 @@ Refer to [security definition](./howto_define_security.md) on how to set it up a
 
 ## HTTP Status Codes
 - Full list of [HTTP codes](./http_response_codes.md)
-
-## Additional Info
-
-Most of these configuration considerations are covered in a bit more detail in a couple of Redbooks published by IBM in collaboration with the 
-Walmart SMEs. Please refer to these publications for additional information:
-
-#### Creating IBM z/OS Cloud Services
-http://www.redbooks.ibm.com/redbooks/pdfs/sg248324.pdf
-
-#### How Walmart Became a Cloud Services Provider with IBM CICS 
-http://www.redbooks.ibm.com/redbooks/pdfs/sg248347.pdf

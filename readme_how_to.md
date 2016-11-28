@@ -241,13 +241,14 @@ Query mode functions more like a NoSQL system with the ability to query by colum
 - Full list of [HTTP codes](./readme_http_codes.md)
 
 ## Installation
-Refer to the [installation instructions](./readme_install.md) for complete setup in the z/OS environment.
+Refer to the [installation instructions](./Installation.md) for complete setup in the z/OS environment.
 
 ## Contributors
 
-- **_Randy Frerking_**,	Walmart Stores Inc.
-- **_Rich Jackson_**, Walmart Stores Inc.
-- **_Michael Karagines_**, Walmart Stores Inc.
+- **_Randy Frerking_**,	Walmart Technology
+- **_Rich Jackson_**, Walmart Technology
+- **_Michael Karagines_**, Walmart Technology
+- **_Trey Vanderpool_**, Walmart Technology
 
 ## Additional Info
 

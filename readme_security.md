@@ -1,8 +1,12 @@
 # Security Definition
 
-Security can be applied to both basic and query mode zFAM instances. Credentials are all based on RACF user id and password authentication passed to the service via Basic Authorization header.
+Security can be applied to both basic and query mode zFAM instances. Credentials are all based on RACF user id and password authentication passed to the service via Basic Authorization header.  
 
-The security document template is optional and when used is defined similiar to the [Query Mode field definition](./readme_query_mode) template. Use the 4 character zFAM instance name and append "SD" to the name like FA01SD. You can define one or more RACF users to have all or selective access to the data.
+    `Authorization: Basic base64encodedvalue==`
+
+The security document template is optional and when used is defined similiar to the [Query Mode field definition](./readme_query_mode) template. Use the 4 character zFAM instance name and append "SD" to the name like FA01SD. Refer to the [installation document](./Installation.md) on how to define the document template to your CICS region. 
+
+You can define one or more RACF users to have all or selective access to the data.
 
 Here is an example security document template:
 ```

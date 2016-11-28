@@ -233,6 +233,11 @@ Query mode functions more like a NoSQL system with the ability to query by colum
         Column names must match existing zFAM definition. The first column **_must_** be either the primary key or one of the secondary indexed columns otherwise it will post status code 400.  
         Quotes are not needed around string values and are considered part of the value. Embedded spaces are allowed.
     
+## Security
+Security is optional and can be applied to basic and query mode instances for all access read, update and deletes. RACF is used for authentication.
+
+Refer to [security definition](./howto_define_security.md) on how to set it up and it's applied by the different modes.
+
 ## Code Examples
 - [Basic Mode](./example_basic_mode.md) Examples  
 - [Query Mode](./example_query_mode.md) Examples
